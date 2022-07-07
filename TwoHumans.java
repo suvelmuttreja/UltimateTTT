@@ -1,0 +1,80 @@
+package UltimateTTT;
+/*
+ * Suvel Muttreja CS 2336.003
+ * Analysis: This game is human v. human. It will use the human object as its player, which will make the choices and an ultgame
+ * object for the game. Since this a type of game, it will be a subclass of gengame. The playgame method will start the game
+ * and implement the logic to play the game, using the objects accordingly.
+ * Design: This class implements its own version of playgame method inherited from superclass. To start, it checks if there is
+ * a winner or tie and stops playing if there is. Then, if needed, the board move is chosen. Then, a square move is chosen. Then,
+ * the game object plays that move. However, if that move is invalid, this method asks for a new board and/or square move until the 
+ * move is valid. After that, the parameters update and the next turn starts. 
+ *  */
+public class TwoHumans extends GenGame {
+	
+	public TwoHumans() {
+		super();
+	}
+	
+	public void playGame() {
+		id=0;
+		UltGame game = new UltGame();
+		Human hum=new Human();
+		game.print();
+		loop = 0;
+		System.out.println("Current player is: "+hum.getPlayer(id));
+		boardMove=hum.boardSelect();
+		
+		while (true) {
+			//checks if there is a winner and stops playing
+			if(game.isWin()==1) {
+				System.out.println("Game winner is: X!"); 
+				break;
+			}
+			if(game.isWin()==2) {
+				System.out.println("Game winner is: O!"); 
+				break;
+			}
+			if(game.isTie()) {
+				System.out.println("It's a tie"); 
+				break;
+			}
+			
+			if(loop!=0) 
+				System.out.println("Current player is: "+hum.getPlayer(id));
+			
+			boolean result=false;
+			
+			while(game.isFull(boardMove)) {//choose new board if previous board is full
+				System.out.println("Board "+boardMove+ " is full!");
+				boardMove=hum.boardSelect();
+				allOpen=true;
+			}
+			
+			if(!allOpen||loop!=0)
+				System.out.println("Selected board is: "+boardMove);
+			sqMove=hum.sqSelect();
+			result = game.doMove(boardMove, sqMove, id+1);
+
+			// Process invalid case.
+			while (!result) {
+				System.out.println("Player "+hum.getPlayer(id)+" made an invalid move on turn "+loop+". Please try again!");
+				System.out.println("Current player is: "+hum.getPlayer(id));
+				System.out.println("Selected board is: "+boardMove);
+				if(allOpen) {
+					boardMove=hum.boardSelect();
+				}
+				sqMove=hum.sqSelect();
+				game.print();
+				result = game.doMove(boardMove, sqMove, id+1);
+				if(result) {
+					allOpen=false;
+					break;
+				}
+			}
+			game.print();
+
+			// Update for next move.
+			update();
+		}
+	}
+}
